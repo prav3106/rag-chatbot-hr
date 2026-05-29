@@ -1,0 +1,649 @@
+<!-- USED AGENTIC AI FOR THE FRONT END -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SWS AI — Policy Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Livvic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-primary: #3B30CC;
+      --blue-light: #EEF0FF;
+      --blue-mid: #6B63E0;
+      --white: #FFFFFF;
+      --gray-50: #F8F9FC;
+      --gray-100: #F1F3F9;
+      --gray-200: #E2E6F0;
+      --gray-400: #9AA3B8;
+      --gray-600: #4B5571;
+      --gray-800: #1C2340;
+      --green: #16A34A;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 16px rgba(59,48,204,0.10);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Livvic', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-logo {
+      width: 34px;
+      height: 34px;
+      background: var(--blue-primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: -0.5px;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: var(--gray-400);
+      font-weight: 400;
+    }
+
+    .header-badge {
+      background: var(--blue-light);
+      color: var(--blue-primary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── Layout ── */
+    .app-layout {
+      display: flex;
+      height: calc(100vh - 60px);
+      max-width: 1100px;
+      margin: 0 auto;
+      gap: 0;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: var(--white);
+      border-right: 1px solid var(--gray-200);
+      padding: 24px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .doc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .doc-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--gray-600);
+      font-weight: 400;
+      transition: background 0.15s;
+    }
+
+    .doc-item:hover { background: var(--gray-100); }
+
+    .doc-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue-mid);
+      flex-shrink: 0;
+    }
+
+    .sample-queries { display: flex; flex-direction: column; gap: 6px; }
+
+    .sample-btn {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--gray-600);
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Livvic', sans-serif;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .sample-btn:hover {
+      background: var(--blue-light);
+      border-color: var(--blue-primary);
+      color: var(--blue-primary);
+    }
+
+    /* ── Main Chat Area ── */
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--gray-50);
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-behavior: smooth;
+    }
+
+    /* ── Welcome State ── */
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      text-align: center;
+      gap: 12px;
+      padding: 60px 24px;
+    }
+
+    .welcome-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--blue-primary);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .welcome h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .welcome p {
+      font-size: 14px;
+      color: var(--gray-400);
+      max-width: 340px;
+      line-height: 1.6;
+    }
+
+    /* ── Messages ── */
+    .message {
+      display: flex;
+      gap: 10px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user { flex-direction: row-reverse; }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .avatar.bot { background: var(--blue-primary); color: white; }
+    .avatar.user { background: var(--gray-200); color: var(--gray-600); }
+
+    .message-body { max-width: 72%; display: flex; flex-direction: column; gap: 6px; }
+    .message.user .message-body { align-items: flex-end; }
+
+    .bubble {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .bubble.bot {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      color: var(--gray-800);
+      border-top-left-radius: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .bubble.user {
+      background: var(--blue-primary);
+      color: white;
+      border-top-right-radius: 4px;
+    }
+
+    /* ── Sources Tag ── */
+    .sources-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .source-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: 100%;
+    }
+
+    .source-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--blue-light);
+      color: var(--blue-primary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      border: 1px solid rgba(59,48,204,0.15);
+    }
+
+    /* ── Typing Indicator ── */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .typing-bubble {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      border-top-left-radius: 4px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .typing-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue-mid);
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ── Error Message ── */
+    .error-bubble {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #DC2626;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+    }
+
+    /* ── Input Area ── */
+    .input-area {
+      padding: 16px 32px 20px;
+      background: var(--white);
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--gray-50);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      transition: border-color 0.2s;
+    }
+
+    .input-row:focus-within {
+      border-color: var(--blue-primary);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(59,48,204,0.08);
+    }
+
+    #question-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: 'Livvic', sans-serif;
+      font-size: 14px;
+      color: var(--gray-800);
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+      max-height: 120px;
+      min-height: 22px;
+    }
+
+    #question-input::placeholder { color: var(--gray-400); }
+
+    #send-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--blue-primary);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    #send-btn:hover { background: var(--blue-mid); transform: scale(1.03); }
+    #send-btn:disabled { background: var(--gray-200); cursor: not-allowed; transform: none; }
+
+    #send-btn svg { width: 16px; height: 16px; }
+
+    .input-hint {
+      font-size: 11px;
+      color: var(--gray-400);
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .messages-container { padding: 16px; }
+      .input-area { padding: 12px 16px 16px; }
+      .message-body { max-width: 88%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-brand">
+    <div class="header-logo">SW</div>
+    <div>
+      <div class="header-title">SWS AI</div>
+      <div class="header-subtitle">Policy Assistant</div>
+    </div>
+  </div>
+  <span class="header-badge">RAG Powered</span>
+</header>
+
+<!-- App Layout -->
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-section-title">Knowledge Base</div>
+      <div class="doc-list" id="doc-list">
+        <div class="doc-item"><span class="doc-dot"></span>Company Overview</div>
+        <div class="doc-item"><span class="doc-dot"></span>HR Policy</div>
+        <div class="doc-item"><span class="doc-dot"></span>Leave Policy</div>
+        <div class="doc-item"><span class="doc-dot"></span>Resignation & Exit</div>
+        <div class="doc-item"><span class="doc-dot"></span>Code of Conduct</div>
+        <div class="doc-item"><span class="doc-dot"></span>Work From Home</div>
+        <div class="doc-item"><span class="doc-dot"></span>Performance Review</div>
+        <div class="doc-item"><span class="doc-dot"></span>Benefits & Compensation</div>
+        <div class="doc-item"><span class="doc-dot"></span>Onboarding Guide</div>
+        <div class="doc-item"><span class="doc-dot"></span>IT & Security Policy</div>
+      </div>
+    </div>
+    <div>
+      <div class="sidebar-section-title">Try Asking</div>
+      <div class="sample-queries">
+        <button class="sample-btn" onclick="askSample(this)">What is the annual leave policy?</button>
+        <button class="sample-btn" onclick="askSample(this)">How many sick leave days do I get?</button>
+        <button class="sample-btn" onclick="askSample(this)">What is the notice period for resignation?</button>
+        <button class="sample-btn" onclick="askSample(this)">What tools does SWS AI use?</button>
+        <button class="sample-btn" onclick="askSample(this)">What is the password policy?</button>
+        <button class="sample-btn" onclick="askSample(this)">How are performance reviews conducted?</button>
+        <button class="sample-btn" onclick="askSample(this)">Does SWS AI offer health insurance?</button>
+        <button class="sample-btn" onclick="askSample(this)">What are the WFH guidelines?</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Chat -->
+  <main class="chat-main">
+    <div class="messages-container" id="messages">
+
+      <!-- Welcome state -->
+      <div class="welcome" id="welcome-state">
+        <div class="welcome-icon">🤖</div>
+        <h2>Ask me anything about SWS AI</h2>
+        <p>I can answer questions about leave policies, HR guidelines, IT security, benefits, and more — all sourced directly from company documents.</p>
+      </div>
+
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div class="input-row">
+        <textarea
+          id="question-input"
+          placeholder="Ask about leave, HR policies, benefits, IT security..."
+          rows="1"
+        ></textarea>
+        <button id="send-btn" onclick="sendMessage()" title="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">Answers are sourced from SWS AI's 10 official policy documents</div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  const input = document.getElementById('question-input');
+  const sendBtn = document.getElementById('send-btn');
+  const messagesEl = document.getElementById('messages');
+  const welcomeState = document.getElementById('welcome-state');
+
+  // Auto-resize textarea
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  });
+
+  // Enter to send (Shift+Enter for newline)
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  function askSample(btn) {
+    input.value = btn.textContent;
+    input.dispatchEvent(new Event('input'));
+    input.focus();
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function appendMessage(role, text, sources = []) {
+    // Remove welcome state on first message
+    if (welcomeState) welcomeState.remove();
+
+    const msg = document.createElement('div');
+    msg.className = `message ${role}`;
+
+    const avatarContent = role === 'bot' ? '🤖' : 'You';
+    const bubbleClass = role === 'bot' ? 'bot' : 'user';
+
+    let sourcesHtml = '';
+    if (sources && sources.length > 0) {
+      const tags = sources.map(s => `<span class="source-tag">📄 ${escapeHtml(s)}</span>`).join('');
+      sourcesHtml = `
+        <div class="sources-area">
+          <span class="source-label">Sources</span>
+          ${tags}
+        </div>`;
+    }
+
+    msg.innerHTML = `
+      <div class="avatar ${role}">${role === 'bot' ? '🤖' : 'You'}</div>
+      <div class="message-body">
+        <div class="bubble ${bubbleClass}">${escapeHtml(text)}</div>
+        ${sourcesHtml}
+      </div>`;
+
+    messagesEl.appendChild(msg);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return msg;
+  }
+
+  function showTyping() {
+    if (welcomeState) welcomeState.remove();
+    const div = document.createElement('div');
+    div.className = 'message typing-indicator';
+    div.id = 'typing';
+    div.innerHTML = `
+      <div class="avatar bot">🤖</div>
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>`;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function hideTyping() {
+    const t = document.getElementById('typing');
+    if (t) t.remove();
+  }
+
+  function showError(msg) {
+    hideTyping();
+    const div = document.createElement('div');
+    div.className = 'message bot';
+    div.innerHTML = `
+      <div class="avatar bot">🤖</div>
+      <div class="message-body">
+        <div class="error-bubble">⚠️ ${escapeHtml(msg)}</div>
+      </div>`;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const question = input.value.trim();
+    if (!question || sendBtn.disabled) return;
+
+    // Show user message
+    appendMessage('user', question);
+    input.value = '';
+    input.style.height = 'auto';
+    sendBtn.disabled = true;
+    showTyping();
+
+    try {
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+
+      hideTyping();
+
+      if (!resp.ok) {
+        const err = await resp.json();
+        showError(err.detail || 'Something went wrong. Please try again.');
+        return;
+      }
+
+      const data = await resp.json();
+      appendMessage('bot', data.answer, data.sources);
+
+    } catch (err) {
+      showError('Could not connect to the server. Make sure the backend is running.');
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+</script>
+</body>
+</html>
