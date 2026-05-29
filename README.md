@@ -28,7 +28,7 @@ BM25 index (rank-bm25) + pickle store
    │              │
    │    Build grounded prompt
    │              │
-   │    Claude claude-sonnet-4-20250514 (Anthropic API)
+   │    Llama 3.3 70B via Groq API
    │              │
    └──────► Answer + Source Document Names
 ```
@@ -37,16 +37,16 @@ BM25 index (rank-bm25) + pickle store
 
 ## Tech Stack
 
-| Component        | Choice                             | Reason                                                        |
-|------------------|------------------------------------|---------------------------------------------------------------|
-| **Language**     | Python 3.11+                       | Required per assessment brief                                 |
-| **Framework**    | FastAPI                            | Async, auto-docs at `/docs`, production-grade                 |
-| **PDF Parsing**  | PyMuPDF (fitz)                     | Fast, accurate text extraction with page metadata             |
-| **Chunking**     | Sentence-boundary sliding window   | Avoids mid-sentence cuts; 500-char chunks, 50-char overlap    |
-| **Retrieval**    | BM25 (rank-bm25)                   | Proven probabilistic ranking; no model download needed        |
-| **Vector Store** | Pickle file (BM25 index)           | Zero infrastructure, runs fully locally                       |
-| **LLM**          | Claude claude-sonnet-4-20250514 (Anthropic)    | Strong grounding, follows "answer only from context"          |
-| **Frontend**     | Plain HTML/CSS/JS                  | No build step; matches SWS AI white/blue design (font: Livvic)|
+| Component        | Choice                          | Reason                                                        |
+|------------------|---------------------------------|---------------------------------------------------------------|
+| **Language**     | Python 3.11+                    | Required per assessment brief                                 |
+| **Framework**    | FastAPI                         | Async, auto-docs at `/docs`, production-grade                 |
+| **PDF Parsing**  | PyMuPDF (fitz)                  | Fast, accurate text extraction with page metadata             |
+| **Chunking**     | Sentence-boundary sliding window| Avoids mid-sentence cuts; 500-char chunks, 50-char overlap    |
+| **Retrieval**    | BM25 (rank-bm25)                | Proven probabilistic ranking; no model download needed        |
+| **Vector Store** | Pickle file (BM25 index)        | Zero infrastructure, runs fully locally                       |
+| **LLM**          | Llama 3.3 70B (Groq API)        | Free tier, very fast inference, strong instruction-following  |
+| **Frontend**     | Plain HTML/CSS/JS               | No build step; matches SWS AI white/blue design (font: Livvic)|
 
 ---
 
@@ -62,7 +62,7 @@ BM25 index (rank-bm25) + pickle store
 ## Retrieval Design
 
 - **Algorithm:** BM25 (Okapi BM25) — a probabilistic TF-IDF variant that accounts for document length normalization and term saturation. Consistently outperforms raw TF-IDF.
-- **k = 5 chunks** retrieved per query; all 5 are passed to the LLM as context; top 3 shown in UI.
+- **k = 5 chunks** retrieved per query; all 5 passed to the LLM as context; top 3 shown in UI.
 - **Tested accuracy:** All 8 sample queries from the assessment portal retrieve the correct source document as the top result.
 
 ---
@@ -120,10 +120,10 @@ pip install -r requirements.txt
 ### 2. Set Environment Variable
 
 ```bash
-export ANTHROPIC_API_KEY="your-api-key-here"
+export GROQ_API_KEY="gsk_..."
 ```
 
-Get a key at: https://console.anthropic.com
+Get a free key at: https://console.groq.com — no credit card needed.
 
 ### 3. Ingest Documents
 
@@ -191,4 +191,4 @@ Returns system status, chunk count, model info.
 | "What are the WFH guidelines?" | WFH Policy |
 
 
-Done with the help of AI Agents
+Made with AI Agents.
